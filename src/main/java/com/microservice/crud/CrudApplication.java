@@ -18,7 +18,8 @@ public class CrudApplication {
     public CommandLineRunner commandLineRunner(StudentDAO studentDAO) {
         return runner -> {
 //            createStudent(studentDAO);
-            createMultipleStudents(studentDAO);
+//            createMultipleStudents(studentDAO);
+            readStudent(studentDAO);
         };
     }
 
@@ -32,16 +33,32 @@ public class CrudApplication {
         System.out.println("🫆 Displaying Student ID: " + tempStudent.getId());
     }
 
-    private void createMultipleStudents(StudentDAO studentDAO){
+    private void createMultipleStudents(StudentDAO studentDAO) {
         System.out.println("🫘 Creating multiple students.");
-        Student tempStudent1 = new Student("Batman","Dark Knight","batman@gmail.com");
-        Student tempStudent2 = new Student("Peacemaker","Dragon","peacemaker@gmail.com");
-        Student tempStudent3 = new Student("Jackal","Alexander","jackal@gmail.com");
+        Student tempStudent1 = new Student("Batman", "Dark Knight", "batman@gmail.com");
+        Student tempStudent2 = new Student("Peacemaker", "Dragon", "peacemaker@gmail.com");
+        Student tempStudent3 = new Student("Jackal", "Alexander", "jackal@gmail.com");
 
         System.out.println("💾 Saving multiple students.");
         studentDAO.save(tempStudent1);
         studentDAO.save(tempStudent2);
         studentDAO.save(tempStudent3);
+    }
+
+    private void readStudent(StudentDAO studentDAO) {
+        System.out.println("🫘 Creating new student.");
+        Student tempStudent = new Student("Green Lantern", "Ring Master", "green@gmail.com");
+
+        System.out.println("💾 Saving the student.");
+        studentDAO.save(tempStudent);
+
+        int theId = tempStudent.getId();
+        System.out.println("🫆 Saved student Generated ID: " + theId);
+
+        System.out.println("🪪 Retreiving student with ID: " + theId);
+        Student myStudent = studentDAO.findById(theId);
+
+        System.out.println("✅ Found Student: " + myStudent);
     }
 
 }

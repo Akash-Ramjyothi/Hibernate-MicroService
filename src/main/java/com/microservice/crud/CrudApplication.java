@@ -23,7 +23,8 @@ public class CrudApplication {
 //            createMultipleStudents(studentDAO);
 //            readStudent(studentDAO);
 //            queryForStudent(studentDAO);
-            queryForStudentsByLastName(studentDAO);
+//            queryForStudentsByLastName(studentDAO);
+            updateStudent(studentDAO);
         };
     }
 
@@ -79,6 +80,19 @@ public class CrudApplication {
         for (Student tempStudent : theStudents) {
             System.out.println("👨‍🎓 student: " + tempStudent);
         }
+    }
+
+    private void updateStudent(StudentDAO studentDAO) {
+        System.out.println("👨 studentDAO: " + studentDAO);
+
+        int id = 1;
+        Student theStudent = studentDAO.findById(id);
+        System.out.println("🎉 Found theStudent: " + theStudent);
+
+        theStudent.setFirstName("Obi-Wan");
+        studentDAO.update(theStudent);
+
+        System.out.println("🏓 theStudent: " + theStudent);
     }
 
 }

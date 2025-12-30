@@ -2,26 +2,38 @@ package com.microservice.crud.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @Entity
-@Table(name = "student")
-public class Student {
+@Table(
+        name = "student",
+        indexes = {
+                @Index(name = "idx_student_email", columnList = "email")
+        }
+)
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", updatable = false, nullable = false)
     private int id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    public Student() {
-
+    /**
+     * Required by JPA
+     */
+    protected Student() {
     }
 
     public Student(String firstName, String lastName, String email) {
@@ -32,10 +44,6 @@ public class Student {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFirstName() {
@@ -62,8 +70,29 @@ public class Student {
         this.email = email;
     }
 
+    /**
+     * Hibernate-safe equality based on identifier
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Student)) return false;
+        Student other = (Student) o;
+        return id != 0 && id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), id);
+    }
+
     @Override
     public String toString() {
-        return "Student{" + "id=" + id + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", email='" + email + '\'' + '}';
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

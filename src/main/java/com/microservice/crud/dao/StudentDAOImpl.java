@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class StudentDAOImpl implements StudentDAO {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Autowired
     public StudentDAOImpl(EntityManager entityManager) {
@@ -21,48 +22,66 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     @Transactional
-    public void save(Student theStudent) {
-        entityManager.persist(theStudent);
+    public void save(Student student) {
+        entityManager.persist(student);
     }
 
     @Override
-    public Student findById(Integer id) {
-        return entityManager.find(Student.class, id);
+    public Optional<Student> findById(Integer id) {
+        return Optional.ofNullable(entityManager.find(Student.class, id));
     }
 
     @Override
     public List<Student> findAll() {
-        TypedQuery<Student> theQuery = entityManager.createQuery("FROM Student", Student.class);
-
-        return theQuery.getResultList();
+        TypedQuery<Student> query =
+                entityManager.createQuery("FROM Student", Student.class);
+        return query.getResultList();
     }
 
     @Override
-    public List<Student> findByLastName(String theLastName) {
-        TypedQuery<Student> theQuery = entityManager.createQuery("FROM Student WHERE lastName=:theData", Student.class);
-
-        theQuery.setParameter("theData", theLastName);
-
-        return theQuery.getResultList();
-    }
-
-    @Override
-    @Transactional
-    public void update(Student theStudent) {
-        entityManager.merge(theStudent);
+    public List<Student> findByLastName(String lastName) {
+        TypedQuery<Student> query =
+                entityManager.createQuery(
+                        "FROM Student WHERE lastName = :lastName",
+                        Student.class
+                );
+        query.setParameter("lastName", lastName);
+        return query.getResultList();
     }
 
     @Override
     @Transactional
-    public void delete(Integer id) {
-        Student theStudent = entityManager.find(Student.class, id);
-        entityManager.remove(theStudent);
+    public void update(Student student) {
+        entityManager.merge(student);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Integer id) {
+        Student student = entityManager.find(Student.class, id);
+        if (student != null) {
+            entityManager.remove(student);
+        }
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        Student student = entityManager.find(Student.class, id);
+        return student != null;
+    }
+
+    @Override
+    public long count() {
+        return entityManager
+                .createQuery("SELECT COUNT(s) FROM Student s", Long.class)
+                .getSingleResult();
     }
 
     @Override
     @Transactional
     public int deleteAll() {
-        int numOfDeletedRows = entityManager.createQuery("DELETE FROM Student").executeUpdate();
-        return numOfDeletedRows;
+        return entityManager
+                .createQuery("DELETE FROM Student")
+                .executeUpdate();
     }
 }
